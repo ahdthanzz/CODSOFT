@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Cricket Scorecard</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="container">
+    <h1 class="text-center">ABC Trophy Tournament - 2024</h1>
+    <h3 class="text-center">10 Overs Match - Team A vs Team B</h3>
+    
+    <div class="text-center mb-3">
+        <button class="btn btn-primary" id="autoPlay">Auto Play</button>
+    </div>
+
+    <div class="row">
+        <!-- Team A Scorecard -->
+        <div class="col-md-6">
+            <h3 class="text-center">Team A Batting</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Runs</th>
+                        <th>Balls</th>
+                        <th>Wickets</th>
+                    </tr>
+                </thead>
+                <tbody id="team-a-score">
+                    <!-- Data will be loaded via AJAX -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Team B Scorecard -->
+        <div class="col-md-6">
+            <h3 class="text-center">Team B Bowling</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Player</th>
+                        <th>Overs</th>
+                        <th>Runs</th>
+                        <th>Wickets</th>
+                    </tr>
+                </thead>
+                <tbody id="team-b-bowling">
+                    <!-- Data will be loaded via AJAX -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Extras and Total Score -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Extras: <span id="extras">0</span></h4>
+        </div>
+        <div class="col-md-6">
+            <h4>Total Score: <span id="total-score">0</span></h4>
+        </div>
+    </div>
+</div>
+
+<!-- Include jQuery and AJAX Scripts -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="js/live_scorecard_ajax.js"></script>
+<script>
+    $(document).ready(function() {
+        function fetchScorecard() {
+            $.ajax({
+                url: "fetch_scorecard.php",
+                method: "GET",
+                dataType: "json",
+                success: function(data) {
+                    $("#team-a-score").html(data.teamA);
+                    $("#team-b-bowling").html(data.teamB);
+                    $("#extras").text(data.extras);
+                    $("#total-score").text(data.total);
+                }
+            });
+        }
+
+        fetchScorecard();
+        setInterval(fetchScorecard, 5000); // Auto-refresh every 5 seconds
+
+        $("#autoPlay").click(function() {
+            $.post("auto_play.php", function(response) {
+                fetchScorecard();
+            });
+        });
+    });
+
+    
+</script>
+
+</body>
+</html>
